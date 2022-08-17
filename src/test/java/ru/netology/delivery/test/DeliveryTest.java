@@ -192,4 +192,57 @@ class DeliveryTest {
                 .shouldBe(Condition.visible);
 
     }
-}
+
+    @Test
+    @DisplayName("Should not successful meeting without agreement")
+    void shouldNotSuccessfulMeetingWithoutAgreement() {
+        var validUser = DataGenerator.Registration.generateUser("ru");
+        var daysToAddForFirstMeeting = 4;
+        var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=name] input").setValue(validUser.getName());
+        $("[data-test-id=phone] input").setValue(validUser.getPhone());
+        $("[role=button].button").click();
+        $("[data-test-id=agreement].input_invalid .checkbox__text")
+                .shouldHave(Condition.text("Я соглашаюсь с условиями обработки и использования моих персональных данных"), Duration.ofSeconds(4))
+                .shouldBe(Condition.visible);
+    }
+
+    @Test
+    @DisplayName("Should not successful meeting 2 days")
+    void shouldNotSuccessfulMeeting2Days() {
+        var validUser = DataGenerator.Registration.generateUser("ru");
+        var daysToAddForFirstMeeting = 2;
+        var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=name] input").setValue(validUser.getName());
+        $("[data-test-id=phone] input").setValue(validUser.getPhone());
+        $("[data-test-id=agreement] span").click();
+        $("[role=button].button").click();
+        $("[data-test-id=date] .input__sub")
+                .shouldHave(Condition.text("Заказ на выбранную дату невозможен"), Duration.ofSeconds(4))
+                .shouldBe(Condition.visible);
+    }
+
+    @Test
+    @DisplayName("Should not successful meeting with 21s month")
+    void shouldNotSuccessfulMeetingWith21sMonth() {
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue("01.21.2022");
+        $("[data-test-id=name] input").setValue(validUser.getName());
+        $("[data-test-id=phone] input").setValue(validUser.getPhone());
+        $("[data-test-id=agreement] span").click();
+        $("[role=button].button").click();
+        $("[data-test-id=date] .input__sub")
+                .shouldHave(Condition.text("Неверно введена дата"), Duration.ofSeconds(4))
+                .shouldBe(Condition.visible);
+    }
+    }
+
