@@ -4,6 +4,8 @@ import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openqa.selenium.Keys;
 import ru.netology.delivery.data.DataGenerator;
 
@@ -56,21 +58,137 @@ class DeliveryTest {
 
     }
 
-    @Test
-    @DisplayName("Should successful plan and replan meeting")
-    void shouldSuccessfulPlanAndNotReplanMeeting() {
+    @ParameterizedTest
+    @CsvSource({"Vasiliy",
+            "1111111",
+            "@#$%!",
+    })
+    @DisplayName("Should Give Invalid Notification Name")
+    void shouldGiveInvalidNotificationName(String name) {
         var validUser = DataGenerator.Registration.generateUser("ru");
-        var daysToAddForFirstMeeting = 4;
+        var daysToAddForFirstMeeting = 7;
         var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
         $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=name] input").setValue(name);
+        $("[data-test-id=phone] input").setValue(validUser.getPhone());
+        $("[data-test-id=agreement] span").click();
+        $("[role=button].button").click();
+        $("[data-test-id=name] .input__sub")
+                .shouldHave(Condition.text("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы. "), Duration.ofSeconds(4))
+                .shouldBe(Condition.visible);
+
+    }
+
+    @Test
+    @DisplayName("Should Give Invalid Notification Empty Name")
+    void shouldGiveInvalidNotificationEmptyName() {
+        var validUser = DataGenerator.Registration.generateUser("ru");
+        var daysToAddForFirstMeeting = 7;
+        var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=phone] input").setValue(validUser.getPhone());
+        $("[data-test-id=agreement] span").click();
+        $("[role=button].button").click();
+        $("[data-test-id=name] .input__sub")
+                .shouldHave(Condition.text("Поле обязательно для заполнения"), Duration.ofSeconds(4))
+                .shouldBe(Condition.visible);
+
+    }
+
+/*    @ParameterizedTest
+    @CsvSource(
+            {       "+7123456789",
+                    "+712345678910",
+                    "-71234567891",
+                    "+712345678",
+                    "+7123456789112",
+                    "+7123456789A",
+                    "71234567891",
+                    "712345678912",
+                    "FGFDfGGDDDD",
+                    //"+71234567891" //Верный вариант для проверки теста
+    })
+    @DisplayName("Should Give Invalid Notification Phone")
+    void shouldGiveInvalidNotificationPhone(String phone) {
+        var validUser = DataGenerator.Registration.generateUser("ru");
+        var daysToAddForFirstMeeting = 7;
+        var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=name] input").setValue(validUser.getName());
+        $("[data-test-id=phone] input").setValue(phone);
+        $("[data-test-id=agreement] span").click();
+        $("[role=button].button").click();
+        $("[data-test-id=name] .input__sub")
+                .shouldHave(Condition.text("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы. "), Duration.ofSeconds(4))
+                .shouldBe(Condition.visible);
+
+    }*/
+
+    @Test
+    @DisplayName("Should Give Invalid Notification Empty Phone")
+    void shouldGiveInvalidNotificationEmptyPhone() {
+        var validUser = DataGenerator.Registration.generateUser("ru");
+        var daysToAddForFirstMeeting = 7;
+        var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=name] input").setValue(validUser.getName());
+        $("[data-test-id=agreement] span").click();
+        $("[role=button].button").click();
+        $("[data-test-id=phone] .input__sub")
+                .shouldHave(Condition.text("Поле обязательно для заполнения"), Duration.ofSeconds(4))
+                .shouldBe(Condition.visible);
+
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+            {       "Москва!",
+                    "Москва1",
+                    "Москв",
+                    "Москвa" //Английская "a"
+
+                    //"Москва" //Верный вариант для проверки теста
+            })
+    @DisplayName("Should Give Invalid Notification City")
+    void shouldGiveInvalidNotificationCity(String city) {
+        var validUser = DataGenerator.Registration.generateUser("ru");
+        var daysToAddForFirstMeeting = 3;
+        var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
+        $("[data-test-id=city] input").setValue(city);
         $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id=date] input").setValue(firstMeetingDate);
         $("[data-test-id=name] input").setValue(validUser.getName());
         $("[data-test-id=phone] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement] span").click();
         $("[role=button].button").click();
-        $("[data-test-id=success-notification] .notification__content")
-                .shouldHave(Condition.text("Встреча успешно запланирована на " + firstMeetingDate), Duration.ofSeconds(15))
+        $("[data-test-id=city] .input__sub")
+                .shouldHave(Condition.text("Доставка в выбранный город недоступна"), Duration.ofSeconds(4))
+                .shouldBe(Condition.visible);
+
+    }
+
+    @Test
+    @DisplayName("Should Give Invalid Notification Empty City")
+    void shouldGiveInvalidNotificationEmptyCity() {
+        var validUser = DataGenerator.Registration.generateUser("ru");
+        var daysToAddForFirstMeeting = 9;
+        var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=name] input").setValue(validUser.getName());
+        $("[data-test-id=phone] input").setValue(validUser.getPhone());
+        $("[data-test-id=agreement] span").click();
+        $("[role=button].button").click();
+        $("[data-test-id=city] .input__sub")
+                .shouldHave(Condition.text("Поле обязательно для заполнения"), Duration.ofSeconds(4))
                 .shouldBe(Condition.visible);
 
     }
