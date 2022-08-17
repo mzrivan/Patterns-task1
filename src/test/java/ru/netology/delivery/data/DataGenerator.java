@@ -27,7 +27,7 @@ public class DataGenerator {
         // с помощью Faker, либо используя массив валидных городов и класс
         Random random = new Random();
         // Массив из городов
-        ArrayList cities  = ExcelParcer.parse("C:\\GIT\\patterns\\patterns-task1/artifacts/city.xls");
+        ArrayList cities  = ExcelParcer.parse("./artifacts/city.xls");
         String city = String.valueOf(cities.get(random.nextInt(cities.size())));
         return city;
     }

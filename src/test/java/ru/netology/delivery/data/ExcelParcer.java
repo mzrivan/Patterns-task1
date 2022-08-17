@@ -44,8 +44,8 @@ public class ExcelParcer {
     }
     public static void main (String[] args){
         PrintStream out = new PrintStream(System.out, true, UTF_8); // true = autoflush
-        for (int i = 0; i < parse("C:\\GIT\\patterns\\patterns-task1/artifacts/city.xls").size(); i++) {
-            out.println(parse("C:\\GIT\\patterns\\patterns-task1/artifacts/city.xls").get(i));
+        for (int i = 0; i < parse("./artifacts/city.xls").size(); i++) {
+            out.println(parse("./artifacts/city.xls").get(i));
         }
     }
 
