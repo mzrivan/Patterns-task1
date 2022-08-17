@@ -6,7 +6,9 @@ import lombok.val;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Random;
 
 
 public class DataGenerator {
@@ -20,11 +22,13 @@ public class DataGenerator {
         return date;
     }
 
-    public static String generateCity(String locale) {
-        Faker faker = new Faker(new Locale(locale));
+    public static String generateCity() {
         // TODO: добавить логику для объявления переменной city и задания её значения, генерацию можно выполнить
         // с помощью Faker, либо используя массив валидных городов и класс
-        String city = faker.address().city();
+        Random random = new Random();
+        // Массив из городов
+        ArrayList cities  = ExcelParcer.parse("C:\\GIT\\patterns\\patterns-task1/artifacts/city.xls");
+        String city = String.valueOf(cities.get(random.nextInt(cities.size())));
         return city;
     }
 
@@ -53,7 +57,7 @@ public class DataGenerator {
             // generateName(locale), generatePhone(locale)
 
             return new UserInfo(
-                    generateCity(locale),
+                    generateCity(),
                     generateName(locale),
                     generatePhone(locale)
                     );
